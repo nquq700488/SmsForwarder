@@ -14,23 +14,18 @@ jobs:
         with:
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Add upstream repo
-        run: git remote add upstream https://github.com/pppscn/SmsForwarder.git
+        run: git remote add upstream ${{ secrets.UPSTREAM_REPO_URL }}
 
       - name: Fetch upstream
         run: git fetch upstream
 
-      - name: Get current user info
-        run: |
-          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/users/${{ github.actor }})
-          echo "Current user info: $response"
-
       - name: Merge upstream
         run: |
           git checkout main
-          git merge upstream/main --allow-unrelated-histories
+          git merge upstream/main || (git merge --abort && exit 1)
 
       - name: Push changes
-        run: git push origin main    
+        run: git push origin main
