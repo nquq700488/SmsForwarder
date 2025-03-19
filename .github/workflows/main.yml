@@ -21,6 +21,12 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream
 
+      - name: Get current user info
+        run: |
+          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/users/${{ github.actor }})
+          echo "Current user info: $response"
+
       - name: Merge upstream
         run: |
           git checkout main
